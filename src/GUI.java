@@ -125,7 +125,7 @@ public class GUI implements ActionListener {
         menuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
         menuItemSaveAs.setMnemonic('W');
         menuItemSaveAs.setFocusable(true);
-        menuItemSaveAs.setActionCommand("Save as");
+        menuItemSaveAs.setActionCommand("SaveAs");
         menuFile.add(menuItemSaveAs);
 
         menuFile.addSeparator();
@@ -151,6 +151,15 @@ public class GUI implements ActionListener {
                 break;
             case "Open":
                 file.open();
+                break;
+            case "Save":
+                file.save();
+                break;
+            case "SaveAs":
+                file.saveAs();
+                break;
+            case "Exit":
+                file.exit();
                 break;
         }
     }
