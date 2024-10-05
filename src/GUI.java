@@ -9,26 +9,50 @@ import javax.swing.*;
 public class GUI implements ActionListener {
 
     JFrame window;
+    private JPanel backgroundPanel;
+    boolean wordWrapOn = false;
+
+    //    TEXT AREA
     JTextArea textArea;
     JScrollPane scrollPane;
+
+    //    TOP MENU
     JMenuBar menuBar;
     JMenu menuFile, menuEdit, menuFormat, menuColor;
-    JMenuItem menuItemNew, menuItemOpen, menuItemSave, menuItemSaveAs, menuItemExit, menuItemUndo,
-            menuItemRedo, menuItemCut, menuItemCopy, menuItemPaste, menuItemSelectAll,
-            menuItemClear, menuItemFont, menuItemBackgroundColor;
-    private JPanel backgroundPanel;
 
+    //    FILE MENU
+    JMenuItem menuItemNew, menuItemOpen, menuItemSave, menuItemSaveAs, menuItemExit, menuItemUndo, menuItemRedo, menuItemCut, menuItemCopy, menuItemPaste, menuItemSelectAll, menuItemClear, menuItemFont, menuItemBackgroundColor;
+
+    //    FORMAT MENU
+    JMenuItem iWrap, iFontArial, iFontCSMS, iFontTNR, iFontSize8, iFontSize12, iFontSize16, iFontSize20, iFontSize24, iFontSize28;
+    JMenu menuFont, menuFontSize;
+
+    // COLORS MENU
+    JMenuItem iColor1, iColor2, iColor3;
+
+    //     FUNCTIONS
     Function_File file = new Function_File(this);
+    Function_Format format = new Function_Format(this);
+    Function_Colors colors = new Function_Colors(this);
 
     public static void main(String[] args) {
         new GUI();
     }
 
     public GUI() {
+
         createWindow();
         createTextArea();
         createMenuBar();
         createFileMenu();
+        createFormatMenu();
+        createColorMenu();
+
+        format.selectedFont = "Arial";
+        format.createFont(16);
+        format.wordWrap();
+        colors.changeColor("Color2");
+
         window.setVisible(true);
     }
 
@@ -123,11 +147,10 @@ public class GUI implements ActionListener {
         menuItemSaveAs = new JMenuItem("Save as");
         menuItemSaveAs.addActionListener(this);
         menuItemSaveAs.setAccelerator(KeyStroke.getKeyStroke("ctrl shift S"));
-        menuItemSaveAs.setMnemonic('W');
+        menuItemSaveAs.setMnemonic('A');
         menuItemSaveAs.setFocusable(true);
         menuItemSaveAs.setActionCommand("SaveAs");
         menuFile.add(menuItemSaveAs);
-
         menuFile.addSeparator();
 
         menuItemExit = new JMenuItem("Exit");
@@ -139,6 +162,90 @@ public class GUI implements ActionListener {
         menuFile.add(menuItemExit);
 
         menuFile.setFont(new Font("Consolas", Font.BOLD, 14));
+    }
+
+    public void createFormatMenu() {
+        iWrap = new JMenuItem("Word Wrap: Off");
+        iWrap.addActionListener(this);
+        iWrap.setAccelerator(KeyStroke.getKeyStroke("ctrl W"));
+        iWrap.setMnemonic('W');
+        iWrap.setFocusable(true);
+        iWrap.setActionCommand("Word Wrap");
+        menuFormat.add(iWrap);
+
+        menuFont = new JMenu("Font");
+        menuFormat.add(menuFont);
+
+        // Items Menu Font
+        iFontArial = new JMenuItem("Arial");
+        iFontArial.addActionListener(this);
+        iFontArial.setActionCommand("Arial");
+        menuFont.add(iFontArial);
+
+        iFontCSMS = new JMenuItem("Comic Sans MS");
+        iFontCSMS.addActionListener(this);
+        iFontCSMS.setActionCommand("Comic Sans MS");
+        menuFont.add(iFontCSMS);
+
+        iFontTNR = new JMenuItem("Times New Roman");
+        iFontTNR.addActionListener(this);
+        iFontTNR.setActionCommand("Times New Roman");
+        menuFont.add(iFontTNR);
+
+        menuFontSize = new JMenu("Font Size");
+        menuFormat.add(menuFontSize);
+
+        // Items Menu Font Size
+        iFontSize8 = new JMenuItem("8");
+        iFontSize8.addActionListener(this);
+        iFontSize8.setActionCommand("size8");
+        menuFontSize.add(iFontSize8);
+
+        iFontSize12 = new JMenuItem("12");
+        iFontSize12.addActionListener(this);
+        iFontSize12.setActionCommand("size12");
+        menuFontSize.add(iFontSize12);
+
+        iFontSize16 = new JMenuItem("16");
+        iFontSize16.addActionListener(this);
+        iFontSize16.setActionCommand("size16");
+        menuFontSize.add(iFontSize16);
+
+        iFontSize20 = new JMenuItem("20");
+        iFontSize20.addActionListener(this);
+        iFontSize20.setActionCommand("size20");
+        menuFontSize.add(iFontSize20);
+
+        iFontSize24 = new JMenuItem("24");
+        iFontSize24.addActionListener(this);
+        iFontSize24.setActionCommand("size24");
+        menuFontSize.add(iFontSize24);
+
+        iFontSize28 = new JMenuItem("28");
+        iFontSize28.addActionListener(this);
+        iFontSize28.setActionCommand("size28");
+        menuFontSize.add(iFontSize28);
+
+
+        menuFont.setFont(new Font("Consolas", Font.BOLD, 14));
+        menuFontSize.setFont(new Font("Consolas", Font.BOLD, 14));
+    }
+
+    public void createColorMenu() {
+        iColor1 = new JMenuItem("White");
+        iColor1.addActionListener(this);
+        iColor1.setActionCommand("Color1");
+        menuColor.add(iColor1);
+
+        iColor2 = new JMenuItem("Red");
+        iColor2.addActionListener(this);
+        iColor2.setActionCommand("Color2");
+        menuColor.add(iColor2);
+
+        iColor3 = new JMenuItem("Violet");
+        iColor3.addActionListener(this);
+        iColor3.setActionCommand("Color3");
+        menuColor.add(iColor3);
     }
 
     @Override
@@ -160,6 +267,45 @@ public class GUI implements ActionListener {
                 break;
             case "Exit":
                 file.exit();
+                break;
+            case "Arial":
+                format.setFont(command);
+                break;
+            case "Comic Sans MS":
+                format.setFont(command);
+                break;
+            case "Times New Roman":
+                format.setFont(command);
+                break;
+            case "Word Wrap":
+                format.wordWrap();
+                break;
+            case "size8":
+                format.createFont(8);
+                break;
+            case "size12":
+                format.createFont(12);
+                break;
+            case "size16":
+                format.createFont(16);
+                break;
+            case "size20":
+                format.createFont(20);
+                break;
+            case "size24":
+                format.createFont(24);
+                break;
+            case "size28":
+                format.createFont(28);
+                break;
+            case "Color1":
+                colors.changeColor(command);
+                break;
+            case "Color2":
+                colors.changeColor(command);
+                break;
+            case "Color3":
+                colors.changeColor(command);
                 break;
         }
     }
