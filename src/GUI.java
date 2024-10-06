@@ -5,6 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
 public class GUI implements ActionListener {
 
@@ -27,13 +30,19 @@ public class GUI implements ActionListener {
     JMenuItem iWrap, iFontArial, iFontCSMS, iFontTNR, iFontSize8, iFontSize12, iFontSize16, iFontSize20, iFontSize24, iFontSize28;
     JMenu menuFont, menuFontSize;
 
-    // COLORS MENU
+    //      COLORS MENU
     JMenuItem iColor1, iColor2, iColor3;
+
+    //      EDIT MENU
+    JMenuItem iUndo, iRedo;
 
     //     FUNCTIONS
     Function_File file = new Function_File(this);
     Function_Format format = new Function_Format(this);
     Function_Colors colors = new Function_Colors(this);
+    Function_Edit edit = new Function_Edit(this);
+
+    UndoManager undoManager = new UndoManager();
 
     public static void main(String[] args) {
         new GUI();
@@ -46,6 +55,7 @@ public class GUI implements ActionListener {
         createMenuBar();
         createFileMenu();
         createFormatMenu();
+        createEditMenu();
         createColorMenu();
 
         format.selectedFont = "Arial";
@@ -88,6 +98,13 @@ public class GUI implements ActionListener {
 
     public void createTextArea() {
         textArea = new JTextArea();
+
+        textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent undoableEditEvent) {
+                undoManager.addEdit(undoableEditEvent.getEdit());
+            }
+        });
 
         textArea.setBackground(new Color(0xEF000000, true));
         textArea.setCaretColor(new Color(0xE9FD0853, true));
@@ -162,6 +179,29 @@ public class GUI implements ActionListener {
         menuFile.add(menuItemExit);
 
         menuFile.setFont(new Font("Consolas", Font.BOLD, 14));
+    }
+
+    public void createEditMenu() {
+        menuItemUndo = new JMenuItem("Undo");
+        menuItemUndo.addActionListener(this);
+        menuItemUndo.setAccelerator(KeyStroke.getKeyStroke("ctrl Z"));
+        menuItemUndo.setMnemonic('U');
+        menuItemUndo.setFocusable(true);
+        menuItemUndo.setActionCommand("Undo");
+        menuEdit.add(menuItemUndo);
+
+        menuItemRedo = new JMenuItem("Redo");
+        menuItemRedo.addActionListener(this);
+        menuItemRedo.setAccelerator(KeyStroke.getKeyStroke("ctrl Y"));
+        menuItemRedo.setMnemonic('R');
+        menuItemRedo.setFocusable(true);
+        menuItemRedo.setActionCommand("Redo");
+        menuEdit.add(menuItemRedo);
+
+        menuItemCut = new JMenuItem("Cut");
+        menuItemCut.addActionListener(this);
+        menuItemCut.setAccelerator(KeyStroke.getKeyStroke("ctrl X"));
+        menuItemCut.setMnemonic('T');
     }
 
     public void createFormatMenu() {
@@ -267,6 +307,12 @@ public class GUI implements ActionListener {
                 break;
             case "Exit":
                 file.exit();
+                break;
+            case "Undo":
+                undoManager.undo();
+                break;
+            case "Redo":
+                undoManager.redo();
                 break;
             case "Arial":
                 format.setFont(command);
